@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Species} from '../../types/Species';
+import {Species, SpeciesModel} from '../../types/Species';
 
 const speciesSchema = new mongoose.Schema<Species>({
   species_name: {
@@ -31,4 +31,16 @@ const speciesSchema = new mongoose.Schema<Species>({
   },
 });
 
-export default mongoose.model<Species>('Species', speciesSchema);
+speciesSchema.statics.findByArea = function (polygon: any) {
+  return this.find({
+    location: {
+      $geoWithin: {
+        $geometry: polygon,
+      },
+    },
+  })
+    .select('-__v')
+    .populate({path: 'category', select: '-__v'});
+};
+
+export default mongoose.model<Species, SpeciesModel>('Species', speciesSchema);

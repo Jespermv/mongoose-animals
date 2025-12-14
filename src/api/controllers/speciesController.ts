@@ -43,6 +43,32 @@ const getSpecies = async (
   }
 };
 
+const getSpeciesByArea = async (
+  req: Request<{}, {}, {polygon: any}>,
+  res: Response<Species[]>,
+  next: NextFunction,
+) => {
+  try {
+    const {polygon} = req.body;
+    if (!polygon) {
+      return next(new CustomError('Polygon is required', 400));
+    }
+    const species = await speciesModel
+      .find({
+        location: {
+          $geoWithin: {
+            $geometry: polygon,
+          },
+        },
+      })
+      .select('-__v')
+      .populate({path: 'category', select: '-__v'});
+    res.json(species);
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
 const getSpeciesById = async (
   req: Request<{id: string}>,
   res: Response<Species>,
@@ -107,4 +133,4 @@ const deleteSpecies = async (
   }
 };
 
-export {postSpecies, getSpecies, getSpeciesById, putSpecies, deleteSpecies};
+export {postSpecies, getSpecies, getSpeciesById, putSpecies, deleteSpecies, getSpeciesByArea};

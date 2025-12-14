@@ -1,7 +1,6 @@
 import {Express} from 'express';
 import request from 'supertest';
 
-// function to test the server is running
 
 const testServer = async (app: Express) => {
   return new Promise((resolve, reject) => {

@@ -1,4 +1,4 @@
-import {Types} from 'mongoose';
+import {Types, Model} from 'mongoose';
 import {Point} from 'geojson';
 import {Category} from './Category';
 
@@ -9,4 +9,8 @@ type Species = {
   image: string;
 };
 
-export {Species};
+type SpeciesModel = Model<Species> & {
+  findByArea: (polygon: any) => Promise<Species[]>;
+};
+
+export {Species, SpeciesModel};
